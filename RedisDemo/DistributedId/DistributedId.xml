@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DistributedId</name>
+    </assembly>
+    <members>
+        <member name="T:DistributedId.Controllers.HomeController">
+            <summary>
+            Redis Api
+            </summary>
+        </member>
+        <member name="M:DistributedId.Controllers.HomeController.GetSnowId">
+            <summary>
+            获取雪花漂移Id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.HomeController.Setid">
+            <summary>
+            Lua 设置自增Id
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.HomeController.initPrimaryId(System.String)">
+            <summary>
+            生成每天的初始Id
+            </summary>
+            <param name="hashName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.HomeController.getPrimaryId(System.String)">
+            <summary>
+            获取分布式Id
+            </summary>
+            <param name="hashName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.HomeController.removePrimaryByLessDay(System.String,System.Int32)">
+            <summary>
+            删除多少天之前的cols
+            </summary>
+            <param name="hashName"></param>
+            <param name="lessDay"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DistributedId.Enum.GlobalEnumVars.SerialNumberType">
+            <summary>
+            订单编号类型大全
+            </summary>
+        </member>
+        <member name="T:DistributedId.Enum.GlobalEnumVars.Source">
+            <summary>
+            来源
+            订单来源[对应CoreCmsOrder表source字段]
+            </summary>
+        </member>
+        <member name="M:DistributedId.Helper.CommonHelper.GetSerialNumberType(System.Int32)">
+            <summary>
+            获取多种数据编号
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.CommonHelper.Msectime">
+            <summary>
+            返回当前的毫秒时间戳
+            </summary>
+        </member>
+    </members>
+</doc>
