@@ -4,44 +4,77 @@
         <name>DistributedId</name>
     </assembly>
     <members>
-        <member name="T:DistributedId.Controllers.HomeController">
+        <member name="T:DistributedId.Controllers.RedisDelayedQueueController">
             <summary>
-            Redis Api
+            Redis 实现延时队列
             </summary>
         </member>
-        <member name="M:DistributedId.Controllers.HomeController.GetSnowId">
+        <member name="M:DistributedId.Controllers.RedisDelayedQueueController.Test">
+            <summary>
+            延时队列
+            </summary>
+        </member>
+        <member name="T:DistributedId.Controllers.RedisDistributedLockController">
+            <summary>
+            Redis 实现分布式锁
+            </summary>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisDistributedLockController.Post">
+            <summary>
+            分布式锁
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DistributedId.Controllers.RedisIncreaseIdController">
+            <summary>
+            Redis 实现自增ID
+            </summary>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisIncreaseIdController.GetSnowId">
             <summary>
             获取雪花漂移Id
             </summary>
             <returns></returns>
         </member>
-        <member name="M:DistributedId.Controllers.HomeController.Setid">
+        <member name="M:DistributedId.Controllers.RedisIncreaseIdController.Setid">
             <summary>
             Lua 设置自增Id
             </summary>
             <returns></returns>
         </member>
-        <member name="M:DistributedId.Controllers.HomeController.initPrimaryId(System.String)">
+        <member name="M:DistributedId.Controllers.RedisIncreaseIdController.initPrimaryId(System.String)">
             <summary>
             生成每天的初始Id
             </summary>
             <param name="hashName"></param>
             <returns></returns>
         </member>
-        <member name="M:DistributedId.Controllers.HomeController.getPrimaryId(System.String)">
+        <member name="M:DistributedId.Controllers.RedisIncreaseIdController.getPrimaryId(System.String)">
             <summary>
             获取分布式Id
             </summary>
             <param name="hashName"></param>
             <returns></returns>
         </member>
-        <member name="M:DistributedId.Controllers.HomeController.removePrimaryByLessDay(System.String,System.Int32)">
+        <member name="M:DistributedId.Controllers.RedisIncreaseIdController.removePrimaryByLessDay(System.String,System.Int32)">
             <summary>
             删除多少天之前的cols
             </summary>
             <param name="hashName"></param>
             <param name="lessDay"></param>
             <returns></returns>
+        </member>
+        <member name="T:DistributedId.Controllers.RedisLoginLimitController">
+            <summary>
+            Redis 实现指定时间内登录次数限制
+            </summary>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisLoginLimitController.CheckLogin(System.String,System.String)">
+            <summary>
+            redis实现限制1小时内每用户Id最多只能登录5次
+            </summary>
+            <param name="userid">用户id</param>
+            <param name="password">用户密码</param>
         </member>
         <member name="T:DistributedId.Enum.GlobalEnumVars.SerialNumberType">
             <summary>
@@ -65,6 +98,147 @@
             <summary>
             返回当前的毫秒时间戳
             </summary>
+        </member>
+        <member name="T:DistributedId.Helper.DelayedQueue`1">
+            <summary>
+            延时队列
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.#ctor(DistributedId.Helper.RedisCache,System.String,System.Int64)">
+            <summary>
+            构建一个新的延时队列
+            </summary>
+            <param name="redisCache">Redis</param>
+            <param name="queueName">队列名称</param>
+            <param name="dbId">库Id</param>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.Push(`0,System.TimeSpan)">
+            <summary>
+            向队列中添加一个记录
+            </summary>
+            <param name="t">添加的内容</param>
+            <param name="delayed">延时时间</param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.Remove(`0)">
+            <summary>
+            将数据移出队列
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.SetCheck(System.Func{`0,System.Boolean})">
+            <summary>
+            设置检查是否需要执行默认操作
+            </summary>
+            <returns>当返回True时，执行默认操作</returns>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.SetAction(System.Action{`0})">
+            <summary>
+            设置操作
+            </summary>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.ChangeTime(System.Int32,System.Int32)">
+            <summary>
+            更改Time的调度时间
+            </summary>
+            <param name="dueTime"></param>
+            <param name="period"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.Listen">
+            <summary>
+            开始监听数据
+            </summary>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.GetDelayeds">
+            <summary>
+            获取到期记录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.TimerAction(System.Object)">
+            <summary>
+            Timer定期触发
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:DistributedId.Helper.DelayedQueue`1.Stop">
+            <summary>
+            停止监听队列
+            </summary>
+        </member>
+        <member name="M:DistributedId.Helper.RedisCache.SortedSet_Add``1(System.String,``0,System.Decimal,System.Int64)">
+            <summary>
+             添加数据到 SortedSet
+            </summary>
+            <typeparam name="T">类型</typeparam>
+            <param name="key">集合id</param>
+            <param name="t">数值</param>
+            <param name="score">排序码</param>
+            <param name="dbId">库</param>
+        </member>
+        <member name="M:DistributedId.Helper.RedisCache.SortedSet_Remove``1(System.String,``0,System.Int64)">
+            <summary>
+            移除数据从SortedSet
+            </summary>
+            <typeparam name="T">类型</typeparam>
+            <param name="key">集合id</param>
+            <param name="t">数值</param>
+            <param name="dbId">库</param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.RedisCache.SortedSet_GetListByLowestScore``1(System.String,System.Decimal,System.Decimal,System.Int64)">
+            <summary>
+            按Score升序获取数据
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="key">键值</param>
+            <param name="fromScore"></param>
+            <param name="toScore"></param>
+            <param name="dbId">库</param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.RedisCache.Subscribe(System.Int64)">
+            <summary>
+            key过期订阅
+            </summary>
+            <param name="dbId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:DistributedId.Helper.RedisLock.lockKey">
+            <summary>
+            锁key
+            </summary>
+        </member>
+        <member name="F:DistributedId.Helper.RedisLock.lockTime">
+            <summary>
+            锁的过期秒数
+            </summary>
+        </member>
+        <member name="F:DistributedId.Helper.RedisLock.tokenSource">
+            <summary>
+            续命线程取消令牌
+            </summary>
+        </member>
+        <member name="M:DistributedId.Helper.RedisLock.GetLock(System.String)">
+            <summary>
+            获取锁
+            </summary>
+            <param name="requestId">请求id保证释放锁时的客户端和加锁的客户端一致</param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Helper.RedisLock.CreateThredXm">
+            <summary>
+            为锁续命(防止业务操作时间大于锁自动释放时间，锁被自动释放掉)
+            </summary>
+        </member>
+        <member name="M:DistributedId.Helper.RedisLock.ReleaseLock(System.String)">
+            <summary>
+            释放锁操作
+            </summary>
+            <param name="requestId">请求id保证释放锁时的客户端和加锁的客户端一致</param>
         </member>
     </members>
 </doc>

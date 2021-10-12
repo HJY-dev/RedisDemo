@@ -1,30 +1,27 @@
 ﻿using DistributedId.Enum;
 using DistributedId.Helper;
 using FreeRedis;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Yitter.IdGenerator;
 
 namespace DistributedId.Controllers
 {
     /// <summary>
-    /// Redis Api
+    /// Redis 实现自增ID
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class HomeController : ControllerBase
+    public class RedisIncreaseIdController : ControllerBase
     {
         //public static RedisClient cli = new RedisClient(
         //    new ConnectionStringBuilder[] { "127.0.0.1:6379" }
         //);
 
-        public static RedisClient cli = new RedisClient("127.0.0.1:6379");
+        public static RedisClient cli = new RedisClient("127.0.0.1:6379,database=9");
 
-        public HomeController()
+        public RedisIncreaseIdController()
         {
             var options = new IdGeneratorOptions(1);
             YitIdHelper.SetIdGenerator(options);

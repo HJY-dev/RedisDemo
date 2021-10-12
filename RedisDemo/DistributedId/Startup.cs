@@ -1,18 +1,17 @@
+using DistributedId.DbContext;
+using DistributedId.Helper;
+using FreeRedis;
+using FreeSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace DistributedId
 {
@@ -28,6 +27,18 @@ namespace DistributedId
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //×¢Èë freeredis
+            services.AddSingleton(new RedisClient(Configuration.GetConnectionString("freeredis")));
+            services.AddScoped<RedisLock>();
+            services.AddScoped<RedisCache>();
+            //services.AddScoped(typeof(DelayedQueue<>));
+
+            //×¢Èë freesql
+            services.AddSingleton(new FreeSqlBuilder().UseConnectionString(FreeSql.DataType.PostgreSQL,
+                Configuration.GetConnectionString("freesql")).Build<OrderContext>());
+            
+
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -43,6 +54,8 @@ namespace DistributedId
                 c.IgnoreObsoleteActions();
                 c.DocInclusionPredicate((docName, description) => true);
             });
+
+            //services.AddDataProtection(x => x.ApplicationDiscriminator = "site.com");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
