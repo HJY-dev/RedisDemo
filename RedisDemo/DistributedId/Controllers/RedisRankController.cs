@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using FreeRedis;
 
 namespace DistributedId.Controllers
 {
@@ -10,9 +11,20 @@ namespace DistributedId.Controllers
     [ApiController]
     public class RedisRankController : ControllerBase
     {
-        public RedisRankController()
+        readonly RedisClient _redis;
+        public RedisRankController(RedisClient redis)
         {
+            _redis = redis;
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("test")]
+        public ActionResult test()
+        {
+            return Ok();
         }
 
     }

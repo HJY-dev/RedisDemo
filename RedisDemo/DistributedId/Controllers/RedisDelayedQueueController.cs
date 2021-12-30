@@ -68,6 +68,7 @@ namespace DistributedId.Controllers
             //_redis.Expire("D", 20);
             //Thread.Sleep(30);
 
+            // //key 过期通知
             //_redis.Subscribe("__keyevent@11__:expired", (msg, data) =>
             //{
 
