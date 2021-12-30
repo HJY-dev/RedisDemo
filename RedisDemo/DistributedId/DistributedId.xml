@@ -4,6 +4,37 @@
         <name>DistributedId</name>
     </assembly>
     <members>
+        <member name="T:DistributedId.Controllers.RedisBrowseHistoryController">
+            <summary>
+            Redis 浏览记录
+            </summary>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisBrowseHistoryController.AddBrowseHistoryByUserId(System.String,System.String,System.String)">
+            <summary>
+            Redis添加用户浏览历史
+            保存最新的101条数据
+            </summary>
+            <param name="uId">用户Id</param>
+            <param name="optionId">操作Id</param>
+            <param name="optionType">操作类型 1宫观 2神仙</param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisBrowseHistoryController.GetBrowseHistoryByUserId(System.String)">
+            <summary>
+            Redis获取用户浏览历史
+            </summary>
+            <param name="uId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisBrowseHistoryController.GetHistoryPalaceRanks(System.Int32,System.Int32,System.Int64@)">
+            <summary>
+            Redis获取人气访问列表
+            </summary>
+            <param name="page"></param>
+            <param name="size"></param>
+            <param name="total"></param>
+            <returns></returns>
+        </member>
         <member name="T:DistributedId.Controllers.RedisDelayedQueueController">
             <summary>
             Redis 实现延时队列
@@ -13,26 +44,6 @@
             <summary>
             延时队列
             </summary>
-        </member>
-        <member name="T:DistributedId.Controllers.RedisDistributedLockController">
-            <summary>
-            Redis 实现分布式锁
-            </summary>
-        </member>
-        <member name="M:DistributedId.Controllers.RedisDistributedLockController.RushToBuy">
-            <summary>
-            执行抢购
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:DistributedId.Controllers.RedisDistributedLockController.Post(System.Int32,System.Int32,System.String)">
-            <summary>
-            分布式锁
-            </summary>
-            <param name="id">商品Id</param>
-            <param name="goodsCount">购买数量</param>
-            <param name="uid">请求Id</param>
-            <returns></returns>
         </member>
         <member name="T:DistributedId.Controllers.RedisIncreaseIdController">
             <summary>
@@ -110,6 +121,21 @@
             </summary>
             <param name="userid">用户id</param>
             <param name="password">用户密码</param>
+        </member>
+        <member name="T:DistributedId.Controllers.RedisRankController">
+            <summary>
+            Redis 排名
+            </summary>
+        </member>
+        <member name="P:DistributedId.Dto.Option.optionId">
+            <summary>
+            操作Id
+            </summary>
+        </member>
+        <member name="P:DistributedId.Dto.Option.optionType">
+            <summary>
+            操作类型
+            </summary>
         </member>
         <member name="T:DistributedId.Enum.GlobalEnumVars.SerialNumberType">
             <summary>
@@ -241,39 +267,6 @@
             </summary>
             <param name="dbId"></param>
             <returns></returns>
-        </member>
-        <member name="F:DistributedId.Helper.RedisLock.lockKey">
-            <summary>
-            锁key
-            </summary>
-        </member>
-        <member name="F:DistributedId.Helper.RedisLock.lockTime">
-            <summary>
-            锁的过期秒数
-            </summary>
-        </member>
-        <member name="F:DistributedId.Helper.RedisLock.tokenSource">
-            <summary>
-            续命线程取消令牌
-            </summary>
-        </member>
-        <member name="M:DistributedId.Helper.RedisLock.GetLock(System.String)">
-            <summary>
-            获取锁
-            </summary>
-            <param name="requestId">请求id保证释放锁时的客户端和加锁的客户端一致</param>
-            <returns></returns>
-        </member>
-        <member name="M:DistributedId.Helper.RedisLock.CreateThredXm">
-            <summary>
-            为锁续命(防止业务操作时间大于锁自动释放时间，锁被自动释放掉)
-            </summary>
-        </member>
-        <member name="M:DistributedId.Helper.RedisLock.ReleaseLock(System.String)">
-            <summary>
-            释放锁操作
-            </summary>
-            <param name="requestId">请求id保证释放锁时的客户端和加锁的客户端一致</param>
         </member>
     </members>
 </doc>

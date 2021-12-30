@@ -9,7 +9,7 @@ namespace DistributedId.DbContext
     {
     }
 
-    public class OrderContext1
+    public class PalaceContext
     {
     }
 }
