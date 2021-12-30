@@ -30,7 +30,6 @@ namespace DistributedId
         {
             //×¢Èë freeredis
             services.AddSingleton(new RedisClient(Configuration.GetConnectionString("freeredis")));
-            services.AddScoped<RedisLock>();
             services.AddScoped<RedisCache>();
             services.AddScoped(typeof(DelayedQueue<>));
 
