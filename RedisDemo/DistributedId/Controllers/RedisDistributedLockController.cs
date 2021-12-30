@@ -3,7 +3,10 @@ using DistributedId.Entity;
 using DistributedId.Helper;
 using FreeRedis;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DistributedId.Controllers
 {
@@ -12,41 +15,75 @@ namespace DistributedId.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class RedisDistributedLockController : ControllerBase
     {
-        readonly IFreeSql<OrderContext> freeSql;
-        readonly RedisLock redisLock;
+        readonly IFreeSql<OrderContext> _freeSql;
+        readonly RedisLock _redisLock;
+        readonly ILogger _logger;
+        readonly string _distributedLockKey = "DISTRIBUTEDLOCKKEY";
 
-        public RedisDistributedLockController(IFreeSql<OrderContext> _freeSql, RedisLock _redisLock)
+        public RedisDistributedLockController(IFreeSql<OrderContext> freeSql, RedisLock redisLock, ILoggerFactory loggerFactory)
         {
-            freeSql = _freeSql;
-            redisLock = _redisLock;
+            _freeSql = freeSql;
+            _redisLock = redisLock;
+            _logger = loggerFactory.CreateLogger<RedisDistributedLockController>();
+        }
+
+
+        /// <summary>
+        /// 执行抢购
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("rushToBuy")]
+        public bool RushToBuy()
+        {
+            Parallel.For(0, 20, (i) => { Task.Run(() => { Post(1,1, Guid.NewGuid().ToString("N")); }); });
+            return true;
         }
 
         /// <summary>
         /// 分布式锁
         /// </summary>
+        /// <param name="id">商品Id</param>
+        /// <param name="goodsCount">购买数量</param>
+        /// <param name="uid">请求Id</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("distributedLock")]
-        public int Post()
+        private int Post(int id,int goodsCount,string uid)
         {
-            //请求id
-            string requestId = Guid.NewGuid().ToString();
             try
             {
                 //获取锁
-                redisLock.GetLock(requestId);
-                //业务操作
-                var redisLockd = freeSql.Select<RedisLockdTest>().First();
-                redisLockd.Num++;
-                freeSql.Update<RedisLockdTest>().Set(r => r.Num, redisLockd.Num).Where(r => 1 == 1).ExecuteAffrows();
-                return redisLockd.Num;
+                var lockObj = _redisLock.GetLock(uid);
+                if(lockObj)
+                {
+                    //业务操作
+                    var stockCount = _freeSql.Select<RedisLockdTest>().Where(x => x.Id == id).First().Num;
+                    if (stockCount > 0 && stockCount >= goodsCount)
+                    {
+                        stockCount -= goodsCount;
+                        _logger.LogInformation($"线程Id:{Thread.CurrentThread.ManagedThreadId}，抢购成功！库存数：{stockCount}");
+                        var result = _freeSql.Update<RedisLockdTest>().Set(r => r.Num, stockCount).Where(r => r.Id == id).ExecuteAffrows();
+                        _redisLock.ReleaseLock(uid);
+                        return result;
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"线程Id:{Thread.CurrentThread.ManagedThreadId}，抢购失败！");
+                        _redisLock.ReleaseLock(uid);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _redisLock.ReleaseLock(uid);
             }
             finally
             {
-                redisLock.ReleaseLock(requestId);
+                //_redisLock.ReleaseLock(uid);
             }
+            return 0;
         }
 
 

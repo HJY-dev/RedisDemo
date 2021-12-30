@@ -21,7 +21,7 @@ namespace DistributedId.Helper
         /// <summary>
         /// 锁的过期秒数
         /// </summary>
-        private readonly int lockTime = 20;
+        private readonly int lockTime = 1;
         /// <summary>
         /// 续命线程取消令牌
         /// </summary>
@@ -36,8 +36,9 @@ namespace DistributedId.Helper
         public bool GetLock(string requestId)
         {
             //设置key 设置过期时间20s
-            while (true)
+            while (DateTime.Now.Subtract(DateTime.Now).TotalSeconds < (double)lockTime)
             {
+                _redis.Lock(lockKey, lockTime);
                 //设置key Redis2.6.12以上版本，可以用set获取锁。set可以实现setnx和expire，这个是原子操作
                 if (_redis.SetNx(lockKey, requestId, lockTime))
                 {
@@ -46,6 +47,7 @@ namespace DistributedId.Helper
                     return true;
                 }
             }
+            return false;   
         }
 
         /// <summary>

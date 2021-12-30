@@ -19,10 +19,19 @@
             Redis 实现分布式锁
             </summary>
         </member>
-        <member name="M:DistributedId.Controllers.RedisDistributedLockController.Post">
+        <member name="M:DistributedId.Controllers.RedisDistributedLockController.RushToBuy">
+            <summary>
+            执行抢购
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisDistributedLockController.Post(System.Int32,System.Int32,System.String)">
             <summary>
             分布式锁
             </summary>
+            <param name="id">商品Id</param>
+            <param name="goodsCount">购买数量</param>
+            <param name="uid">请求Id</param>
             <returns></returns>
         </member>
         <member name="T:DistributedId.Controllers.RedisIncreaseIdController">
@@ -62,6 +71,32 @@
             </summary>
             <param name="hashName"></param>
             <param name="lessDay"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DistributedId.Controllers.RedisLockController">
+            <summary>
+            Redis 实现分布式锁
+            </summary>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisLockController.InitStock">
+            <summary>
+            初始化商品库存
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisLockController.RushToBuy">
+            <summary>
+            执行抢购
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisLockController.Post(System.Int32,System.Int32,System.String)">
+            <summary>
+            分布式锁
+            </summary>
+            <param name="id">商品Id</param>
+            <param name="goodsCount">购买数量</param>
+            <param name="uid">请求Id</param>
             <returns></returns>
         </member>
         <member name="T:DistributedId.Controllers.RedisLoginLimitController">

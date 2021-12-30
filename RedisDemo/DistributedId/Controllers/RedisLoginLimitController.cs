@@ -11,11 +11,10 @@ namespace DistributedId.Controllers
     [ApiController]
     public class RedisLoginLimitController : ControllerBase
     {
-        public static RedisClient cli = new RedisClient("127.0.0.1:6379,database=10");
-
-        public RedisLoginLimitController()
+        readonly RedisClient _redis;
+        public RedisLoginLimitController(RedisClient redis)
         {
-                
+            _redis = redis;
         }
 
         /// <summary>
@@ -32,12 +31,12 @@ namespace DistributedId.Controllers
                 if(password != "123456")
                 {
                     //密码错误
-                    var isExit = cli.Exists(userid);
+                    var isExit = _redis.Exists(userid);
                     if (isExit)
                     {
-                        if (Convert.ToInt16(cli.Get(userid)) < 5)
+                        if (Convert.ToInt16(_redis.Get(userid)) < 5)
                         {
-                            cli.Incr(userid);
+                            _redis.Incr(userid);
                         }
                         else
                         {
@@ -46,8 +45,8 @@ namespace DistributedId.Controllers
                     }
                     else
                     {
-                        cli.Set(userid, 1);
-                        cli.Expire(userid, 3600);
+                        _redis.Set(userid, 1);
+                        _redis.Expire(userid, 3600);
                     }
                 }
                 else
@@ -59,7 +58,7 @@ namespace DistributedId.Controllers
             {
                 return $"{userid} 用户不存在";
             }
-            return $"{userid} 您还有{5-Convert.ToInt16(cli.Get(userid))} 次登录机会";
+            return $"{userid} 您还有{5-Convert.ToInt16(_redis.Get(userid))} 次登录机会";
         }
 
     }

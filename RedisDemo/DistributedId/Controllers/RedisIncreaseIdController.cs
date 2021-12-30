@@ -15,16 +15,11 @@ namespace DistributedId.Controllers
     [ApiController]
     public class RedisIncreaseIdController : ControllerBase
     {
-        //public static RedisClient cli = new RedisClient(
-        //    new ConnectionStringBuilder[] { "127.0.0.1:6379" }
-        //);
+        readonly RedisClient _redis;
 
-        public static RedisClient cli = new RedisClient("127.0.0.1:6379,database=9");
-
-        public RedisIncreaseIdController()
+        public RedisIncreaseIdController(RedisClient redis)
         {
-            var options = new IdGeneratorOptions(1);
-            YitIdHelper.SetIdGenerator(options);
+            _redis = redis;
         }
 
         /// <summary>
@@ -55,7 +50,7 @@ namespace DistributedId.Controllers
                 " return current ";
             var rediskey = DateTime.Now.ToString("yyyy-MM-dd");
             var keyexpire = 86400; // 24h
-            var result = cli.Eval(script, new string[] { rediskey }, new object[] { keyexpire });
+            var result = _redis.Eval(script, new string[] { rediskey }, new object[] { keyexpire });
 
             return result.ToString();
         }
@@ -70,11 +65,11 @@ namespace DistributedId.Controllers
         public String initPrimaryId(String hashName)
         {
             var hashCol = DateTime.Now.ToString("yyyy-MM-dd");
-            if(!cli.HExists(hashName,hashCol))
+            if(!_redis.HExists(hashName,hashCol))
             {
                 //自定义编号规则
                 int hashColVal = 1;
-                cli.HMSet(hashName, hashCol, hashColVal);
+                _redis.HMSet(hashName, hashCol, hashColVal);
             }
             return hashCol;
         }
@@ -91,13 +86,13 @@ namespace DistributedId.Controllers
             try
             {
                 String hashCol = initPrimaryId(hashName);
-                var result = cli.HIncrBy(hashName, hashCol, 1);
+                var result = _redis.HIncrBy(hashName, hashCol, 1);
 
                 #region Lua 脚本方式
                 //String script = " local current = redis.call('HINCRBY', KEYS[1] , ARGV[1] , ARGV[2]); " +
                 //    " return current ";
-                //var result = cli.Eval(script, new string[] { hashName }, new object[] { hashCol, 1 });
-                //cli.Notice += (s, e) => Console.WriteLine(e.Log); //print command log
+                //var result = _redis.Eval(script, new string[] { hashName }, new object[] { hashCol, 1 });
+                //_redis.Notice += (s, e) => Console.WriteLine(e.Log); //print command log
 
                 #endregion
 
@@ -125,8 +120,8 @@ namespace DistributedId.Controllers
                 //lessDay前日期
                 String hashCol = DateTime.Now.AddDays(-lessDay).ToString("yyyy-MM-dd");
 
-                var dic = cli.HGetAll(hashName);
-                var arr = cli.HGetAll(hashName).Where(x => DateTime.Parse(x.Key) < DateTime.Parse(hashCol));
+                var dic = _redis.HGetAll(hashName);
+                var arr = _redis.HGetAll(hashName).Where(x => DateTime.Parse(x.Key) < DateTime.Parse(hashCol));
 
                 if(arr.Count()>0)
                 {
@@ -134,7 +129,7 @@ namespace DistributedId.Controllers
 
                     if (removeCols.Count() > 0)
                     {
-                        return cli.HDel(hashName, removeCols);
+                        return _redis.HDel(hashName, removeCols);
                     }
                 }
                 else

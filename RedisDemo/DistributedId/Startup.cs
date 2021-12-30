@@ -12,6 +12,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
 using System.Reflection;
+using Yitter.IdGenerator;
 
 namespace DistributedId
 {
@@ -31,14 +32,15 @@ namespace DistributedId
             services.AddSingleton(new RedisClient(Configuration.GetConnectionString("freeredis")));
             services.AddScoped<RedisLock>();
             services.AddScoped<RedisCache>();
-            //services.AddScoped(typeof(DelayedQueue<>));
+            services.AddScoped(typeof(DelayedQueue<>));
 
             //注入 freesql
             services.AddSingleton(new FreeSqlBuilder().UseConnectionString(FreeSql.DataType.PostgreSQL,
                 Configuration.GetConnectionString("freesql")).Build<OrderContext>());
-            
 
-
+            //注入雪花算法
+            var options = new IdGeneratorOptions(1);
+            YitIdHelper.SetIdGenerator(options);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
