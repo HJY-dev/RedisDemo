@@ -4,6 +4,15 @@
         <name>DistributedId</name>
     </assembly>
     <members>
+        <member name="T:DistributedId.Controllers.RedisBloomFilterController">
+            <summary>
+            Redis 布隆过滤器 场景
+            解决 Redis 缓存穿透问题；
+            邮件过滤，使用布隆过滤器实现邮件黑名单过滤；
+            爬虫爬过的网站过滤，爬过的网站不再爬取；
+            推荐过的新闻不再推荐；
+            </summary>
+        </member>
         <member name="T:DistributedId.Controllers.RedisBrowseHistoryController">
             <summary>
             Redis 浏览记录
@@ -126,6 +135,12 @@
             <summary>
             Redis 排名
             </summary>
+        </member>
+        <member name="M:DistributedId.Controllers.RedisRankController.test">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="P:DistributedId.Dto.Option.optionId">
             <summary>

@@ -8,7 +8,7 @@ namespace ConsoleApp1
     {
         static Lazy<RedisClient> _cliLazy = new Lazy<RedisClient>(() =>
         {
-            var r = new RedisClient("127.0.0.1:6379,database=10");
+            var r = new RedisClient("127.0.0.1:6379,database=10,max pool size=1");
             r.Notice += (s, e) => Trace.WriteLine(e.Log);
             return r;
         });
@@ -19,12 +19,19 @@ namespace ConsoleApp1
         {
             Console.WriteLine("Hello World!");
 
+
+            cli.Select(11);
+
+            //var script1 = "  redis.call('SELECT',11); ";
+            //cli.Eval(script1);
+
+
             cli.HDel("testkey1", "field1");
 
             var result1 = cli.HIncrBy("testkey1", "field1", 1);
             var read1 = cli.HGet("testkey1", "field1");
             if (read1 != "1" || read1 != result1.ToString()) throw new Exception("bug");
-
+            
             var result2 = cli.HIncrBy("testkey1", "field1", 1);
             var read2 = cli.HGet("testkey1", "field1");
             if (read2 != "2" || read2 != result2.ToString()) throw new Exception("bug");
